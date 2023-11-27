@@ -1,4 +1,5 @@
-﻿@model Cafe.Models.HomeViewModel
+﻿<!-- Views/Home/Index.cshtml -->
+@model Cafe.Models.HomeViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -16,6 +17,8 @@
         {
                 <a href="@link">Ссылка</a>
         }
+        <!-- Добавленная ссылка на страницу регистрации -->
+        <a asp-area="" asp-controller="Account" asp-action="Register">Регистрация</a>
     </div>
 
     <!-- Нижняя часть страницы с 10 картинками -->
