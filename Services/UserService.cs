@@ -13,7 +13,7 @@ namespace Cafe.Services
         private List<UserModel> users;
         private readonly string filePath;
 
-        public UserService(string filePath="users2.json")
+        public UserService(string filePath="users.json")
         {
             this.filePath = filePath;
             LoadData();
@@ -70,6 +70,19 @@ namespace Cafe.Services
             return users;
         }
 
+        public void RemoveUser(string requestingUsername, string targetUsername)
+        {
+            if (requestingUsername != targetUsername)
+            {
+                var user = GetUserByUsername(targetUsername);
+                if (user != null)
+                {
+                    users.Remove(user);
+                    SaveData();
+                }
+            }
+            // Иначе можно выбросить исключение или обработать такой случай по вашему усмотрению.
+        }
     }
 
 }

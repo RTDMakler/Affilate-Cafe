@@ -117,6 +117,15 @@ namespace Cafe.Controllers
         }
 
 
+        [Authorize(Roles = "Administrator")]
+        public IActionResult RemoveUser(string username)
+        {
+            string requestingUsername = User.Identity.Name; // Получаем имя пользователя, выполняющего запрос
+            userService.RemoveUser(requestingUsername, username);
+            return RedirectToAction("ViewUsers");
+        }
+
+
 
     }
 

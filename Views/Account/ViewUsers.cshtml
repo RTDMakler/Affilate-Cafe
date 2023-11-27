@@ -1,12 +1,12 @@
-﻿@model IEnumerable<UserModel>
+﻿@model List<UserModel>
 
-<h2>All Users</h2>
+<h2>View Users</h2>
 
 <table class="table">
     <thead>
         <tr>
             <th>Username</th>
-            <!-- Другие поля пользователя, которые вы хотите отобразить -->
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -14,7 +14,18 @@
         {
                 <tr>
                     <td>@user.UserName</td>
-                    <!-- Другие поля пользователя, которые вы хотите отобразить -->
+                    <td>
+                    @if (User.IsInRole("Administrator") && User.Identity.Name != user.UserName)
+                    {
+                                <form method="post" asp-action="RemoveUser" asp-route-username="@user.UserName">
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                    }
+                    else
+                    {
+                         <p>It's you</p>
+                    }
+                    </td>
                 </tr>
         }
     </tbody>

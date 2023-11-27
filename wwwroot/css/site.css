@@ -29,7 +29,7 @@ body {
 }
 
 .image-item {
-    width: 30vw; 
+    width: 30%; 
     margin-bottom: 10px;
     object-fit:cover;
     aspect-ratio:1;
