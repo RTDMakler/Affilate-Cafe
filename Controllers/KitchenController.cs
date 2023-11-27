@@ -8,7 +8,7 @@
     using System;
     using System.Collections.Generic;
 
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public class KitchenController : Controller
     {
         private static List<OrderModel> orders = new List<OrderModel>();
@@ -30,11 +30,34 @@
             // Генерация номера заказа
             newOrder.OrderNumber = GenerateOrderNumber();
 
+            if (User.Identity.IsAuthenticated)
+            {
+                // Если пользователь аутентифицирован, используйте его имя
+                newOrder.CustomerName = User.Identity.Name;
+            }
+            else
+            {
+                // Иначе, используйте значение из формы
+                newOrder.CustomerName = Request.Form["CustomerName"];
+            }
+
+            // Генерация случайного времени, если не задано в форме
+            if (newOrder.ReadyTime == DateTime.MinValue)
+            {
+                newOrder.ReadyTime = GenerateRandomTime();
+            }
+
             // Добавление нового заказа в список
             orders.Add(newOrder);
-
-            // Перенаправление на страницу существующих заказов
             return RedirectToAction("Kitchen", "Kitchen");
+        }
+
+        private DateTime GenerateRandomTime()
+        {
+            // Генерация случайного времени в пределах ближайших 7 дней
+            Random random = new Random();
+            int daysToAdd = random.Next(1, 7);
+            return DateTime.Now.AddDays(daysToAdd);
         }
 
         private int GenerateOrderNumber()

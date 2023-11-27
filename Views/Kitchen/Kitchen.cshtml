@@ -26,14 +26,23 @@
     <div class="card-body">
         <h3>Add New Order</h3>
         <form method="post" asp-action="AddOrder">
-            <div class="form-group">
-                <label for="CustomerName">Customer Name:</label>
-                <input type="text" id="CustomerName" name="CustomerName" class="form-control" required />
-            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                    <!-- Если пользователь аутентифицирован, используйте его имя -->
+                    <input type="hidden" name="CustomerName" value="@User.Identity.Name" />
+            }
+            else
+            {
+                    <!-- Иначе, предоставьте поле для ввода имени -->
+                    <div class="form-group">
+                        <label for="CustomerName">Customer Name:</label>
+                        <input type="text" id="CustomerName" name="CustomerName" class="form-control" required />
+                    </div>
+            }
 
             <div class="form-group">
                 <label for="ReadyTime">Ready Time:</label>
-                <input type="datetime-local" id="ReadyTime" name="ReadyTime" class="form-control" required />
+                <input type="datetime-local" id="ReadyTime" name="ReadyTime" class="form-control" />
             </div>
 
             <button type="submit" class="btn btn-primary">Add Order</button>
