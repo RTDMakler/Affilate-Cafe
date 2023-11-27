@@ -15,7 +15,7 @@
     <div>
         @foreach (var link in Model.Links)
         {
-                <a href="@link">Ссылка</a>
+            <a href="@link">Ссылка</a>
         }
         <!-- Добавленная ссылка на страницу регистрации -->
         <a asp-area="" asp-controller="Account" asp-action="Register">Регистрация</a>
@@ -25,7 +25,7 @@
     <div class="image-container">
         @foreach (var image in Model.Images)
         {
-                <img class="image-item" src="@Url.Content(image)" alt="Картинка">
+            <img class="image-item" src="@Url.Content(image)" alt="Картинка">
         }
     </div>
 </div>
@@ -34,10 +34,10 @@
 <div>
     @if (User.Identity.IsAuthenticated)
     {
-            <p>User Role: @ViewData["UserRole"]</p>
+        <p>User Role: @ViewData["UserRole"]</p>
     }
     else
     {
-            <p>User not authenticated</p>
+        <p>User not authenticated</p>
     }
 </div>

@@ -56,5 +56,11 @@ namespace Cafe.Controllers
         {
             return RedirectToAction("Register", "Account");
         }
+
+        public IActionResult Kitchen()
+        {
+            // Логика для получения данных, если необходимо
+            return RedirectToAction("Kitchen", "Kitchen");
+        }
     }
 }
