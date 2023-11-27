@@ -12,7 +12,7 @@ namespace Cafe.Services
         private List<UserModel> users;
         private readonly string filePath;
 
-        public UserService(string filePath)
+        public UserService(string filePath="users2.json")
         {
             this.filePath = filePath;
             LoadData();
