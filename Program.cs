@@ -1,4 +1,5 @@
 using Cafe.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Cafe
 {
@@ -11,6 +12,17 @@ namespace Cafe
             // Регистрация служб
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<UserService>();
+
+            // Настройка аутентификации
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login"; // Путь к странице входа
+            });
+
 
             var app = builder.Build();
 
@@ -26,6 +38,7 @@ namespace Cafe
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

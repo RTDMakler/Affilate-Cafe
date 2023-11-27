@@ -17,6 +17,13 @@ namespace Cafe.Services
             this.filePath = filePath;
             LoadData();
         }
+        public bool IsValidUser(string username, string password)
+        {
+            // Пример: Проверка валидности пользователя
+            var user = users.FirstOrDefault(u => u.UserName == username && u.Password == password);
+
+            return user != null;
+        }
 
         private void LoadData()
         {
