@@ -29,3 +29,15 @@
         }
     </div>
 </div>
+
+<!-- Вывод роли пользователя -->
+<div>
+    @if (User.Identity.IsAuthenticated)
+    {
+            <p>User Role: @ViewData["UserRole"]</p>
+    }
+    else
+    {
+            <p>User not authenticated</p>
+    }
+</div>

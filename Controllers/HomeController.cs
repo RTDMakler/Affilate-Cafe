@@ -28,7 +28,7 @@ namespace Cafe.Controllers
             var images = new List<string>();
             for (int i = 1; i <= 10; i++)
             {
-                images.Add($"~/images/image{i}.png");
+                images.Add($"~/images/image{i}.jpg");
             }
 
             // Создаем модель, содержащую данные

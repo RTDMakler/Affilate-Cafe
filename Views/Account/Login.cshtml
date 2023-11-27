@@ -1,4 +1,5 @@
-﻿@model UserModel
+﻿<!-- Views/Account/Login.cshtml -->
+@model UserModel
 
 <h2>Login</h2>
 
@@ -13,6 +14,11 @@
         <label asp-for="Password"></label>
         <input asp-for="Password" type="password" />
         <span asp-validation-for="Password"></span>
+    </div>
+
+    <div>
+        <label for="AdminCode">Admin Code:</label>
+        <input type="number" id="AdminCode" name="adminCode" />
     </div>
 
     <button type="submit">Login</button>

@@ -1,0 +1,21 @@
+﻿@model IEnumerable<UserModel>
+
+<h2>All Users</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <!-- Другие поля пользователя, которые вы хотите отобразить -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+                <tr>
+                    <td>@user.UserName</td>
+                    <!-- Другие поля пользователя, которые вы хотите отобразить -->
+                </tr>
+        }
+    </tbody>
+</table>

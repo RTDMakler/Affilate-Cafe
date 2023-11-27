@@ -9,6 +9,7 @@ namespace Cafe.Services
     // Services/UserService.cs
     public class UserService
     {
+        private const int AdminCode = 1337;
         private List<UserModel> users;
         private readonly string filePath;
 
@@ -23,6 +24,14 @@ namespace Cafe.Services
             var user = users.FirstOrDefault(u => u.UserName == username && u.Password == password);
 
             return user != null;
+        }
+        public bool IsAdminCodeValid(int adminCode)
+        {
+            return adminCode == AdminCode;
+        }
+        public bool IsAdmin(UserModel user, int adminCode)
+        {
+            return user.AdminCode == adminCode;
         }
 
         private void LoadData()
@@ -54,6 +63,13 @@ namespace Cafe.Services
         {
             return users.FirstOrDefault(u => u.UserName == username);
         }
+
+        // UserService.cs
+        public IEnumerable<UserModel> GetAllUsers()
+        {
+            return users;
+        }
+
     }
 
 }
