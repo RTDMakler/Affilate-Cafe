@@ -22,12 +22,22 @@
     </div>
 
     <!-- Нижняя часть страницы с 10 картинками -->
-    <div class="image-container">
+<div class="image-container">
         @foreach (var image in Model.Images)
         {
-            <img class="image-item" src="@Url.Content(image)" alt="Картинка">
+            <div class="image-item">
+                <img src="@Url.Content(image)" alt="Картинка">
+                @if (User.IsInRole("Administrator"))
+                {
+                        <button class="admin-control" onclick="editImage('@image')">Edit</button>
+                        <button class="admin-control" onclick="removeImage('@image')">Remove</button>
+                }
+            </div>
         }
-    </div>
+</div>
+
+
+
 </div>
 
 <!-- Вывод роли пользователя -->
@@ -41,3 +51,45 @@
         <p>User not authenticated</p>
     }
 </div>
+<!-- Форма для загрузки изображений (для администратора) -->
+@if (User.IsInRole("Administrator"))
+{
+    <form id="uploadForm" asp-controller="Home" asp-action="AddImage" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="file" name="imageFile" accept="image/*" required />
+        <button type="submit">Upload Image</button>
+    </form>
+}
+
+<!-- JavaScript для обработки действий администратора -->
+@section Scripts {
+    <script>
+        function editImage(imagePath) {
+            // Логика редактирования изображения (если необходимо)
+            // ...
+        }
+
+        function removeImage(imagePath) {
+            // Отправка запроса на удаление изображения на сервер
+            fetch('/Home/RemoveImage?imagePath=' + encodeURIComponent(imagePath), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Обработка ответа, например, перезагрузка страницы
+                if (data.success) {
+                    location.reload();
+                } else {
+                    console.error('Error removing image');
+                }
+            })
+            .catch(error => {
+                console.error('Error removing image:', error);
+            });
+        }
+    </script>
+}

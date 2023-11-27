@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Cafe.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cafe.Controllers
@@ -61,6 +62,26 @@ namespace Cafe.Controllers
         {
             // Логика для получения данных, если необходимо
             return RedirectToAction("Kitchen", "Kitchen");
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public IActionResult AddImage()
+        {
+            // Логика добавления нового изображения
+            // ...
+
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public IActionResult RemoveImage(string imagePath)
+        {
+            // Логика удаления изображения
+            // ...
+
+            return RedirectToAction("Index");
         }
     }
 }
