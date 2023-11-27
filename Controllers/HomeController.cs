@@ -8,10 +8,29 @@ namespace Cafe.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public HomeController(ILogger<HomeController> logger)
+        // Статическое поле для хранения списка изображений
+        private static List<string> _images;
+        public HomeController(ILogger<HomeController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
+
+            // Загрузка изображений только при первом запуске
+            if (_images == null)
+            {
+                _images = LoadImagesFromFolder("images"); // Путь к папке с изображениями
+            }
+        }
+        private List<string> LoadImagesFromFolder(string folderPath)
+        {
+            var wwwrootPath = _webHostEnvironment.WebRootPath;
+            var imageFiles = Directory.GetFiles(Path.Combine(wwwrootPath, folderPath), "*.jpg")
+                                       .Select(fileName => $"~/{folderPath}/{Path.GetFileName(fileName)}")
+                                       .ToList();
+
+            return imageFiles;
         }
 
         public IActionResult Index()
@@ -25,18 +44,10 @@ namespace Cafe.Controllers
                 Url.Action("Page4")
             };
 
-            // Создаем список для передачи изображений в представление
-            var images = new List<string>();
-            for (int i = 1; i <= 10; i++)
-            {
-                images.Add($"~/images/image{i}.jpg");
-            }
-
-            // Создаем модель, содержащую данные
             var model = new HomeViewModel
             {
                 Links = links,
-                Images = images
+                Images = _images
             };
 
             return View(model);
@@ -78,10 +89,22 @@ namespace Cafe.Controllers
         [HttpPost]
         public IActionResult RemoveImage(string imagePath)
         {
-            // Логика удаления изображения
-            // ...
+            // Проверка наличия изображения в списке
+            if (_images.Contains(imagePath))
+            {
+                // Полный путь к изображению в файловой системе
+                var physicalPath = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('~').TrimStart('/'));
 
-            return RedirectToAction("Index");
+                // Удаляем файл изображения
+                System.IO.File.Delete(physicalPath);
+
+                // Удаляем изображение из списка
+                _images.Remove(imagePath);
+
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false });
         }
     }
 }
