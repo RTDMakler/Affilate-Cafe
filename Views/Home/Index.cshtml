@@ -1,0 +1,28 @@
+﻿@model Cafe.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div>
+    <!-- Верхняя часть страницы с 4 ссылками -->
+    <div>
+        @foreach (var link in Model.Links)
+        {
+                <a href="@link">Ссылка</a>
+        }
+    </div>
+
+    <!-- Нижняя часть страницы с 10 картинками -->
+    <div class="image-container">
+        @foreach (var image in Model.Images)
+        {
+                <img class="image-item" src="@Url.Content(image)" alt="Картинка">
+        }
+    </div>
+</div>
