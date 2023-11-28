@@ -7,21 +7,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <p>We are the best affiliate marketing of pastry food.</p>
 </div>
 
-<div>
-    <!-- Верхняя часть страницы с 4 ссылками -->
-    <div>
-        @foreach (var link in Model.Links)
-        {
-            <a href="@link">Ссылка</a>
-        }
-        <!-- Добавленная ссылка на страницу регистрации -->
-        <a asp-area="" asp-controller="Account" asp-action="Register">Регистрация</a>
-    </div>
 
-    <!-- Нижняя часть страницы с 10 картинками -->
 <div class="image-container">
         @foreach (var image in Model.Images)
         {
@@ -29,35 +18,24 @@
                 <img src="@Url.Content(image)" alt="Картинка">
                 @if (User.IsInRole("Administrator"))
                 {
-                        <button class="admin-control" onclick="editImage('@image')">Edit</button>
-                        <button class="admin-control" onclick="removeImage('@image')">Remove</button>
+                                <div class="admin-controls">
+            <form id="editForm" asp-controller="Home" asp-action="EditImage" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="oldImagePath" value="@image" />
+                <input type="file" name="newImageFile" accept="image/*"  required onchange="this.form.submit()" />
+            </form>
+              <button class="admin-control" onclick="removeImage('@image')">Remove</button>
+        </div>
                 }
             </div>
         }
 </div>
 
 
-
-</div>
-
-<!-- Вывод роли пользователя -->
-<div>
-    @if (User.Identity.IsAuthenticated)
-    {
-        <p>User Role: @ViewData["UserRole"]</p>
-    }
-    else
-    {
-        <p>User not authenticated</p>
-    }
-</div>
-<!-- Форма для загрузки изображений (для администратора) -->
+<!-- Форма для загрузки новых изображений (для администратора) -->
 @if (User.IsInRole("Administrator"))
 {
-    <form id="uploadForm" asp-controller="Home" asp-action="AddImage" method="post" enctype="multipart/form-data">
-        @Html.AntiForgeryToken()
-        <input type="file" name="imageFile" accept="image/*" required />
-        <button type="submit">Upload Image</button>
+        <form id="uploadForm" asp-controller="Home" asp-action="AddImage" method="post" enctype="multipart/form-data">
+        <input type="file"  name="imageFile" accept="image/*" required onchange="this.form.submit()" />
     </form>
 }
 

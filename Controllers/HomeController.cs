@@ -26,27 +26,21 @@ namespace Cafe.Controllers
         private List<string> LoadImagesFromFolder(string folderPath)
         {
             var wwwrootPath = _webHostEnvironment.WebRootPath;
-            var imageFiles = Directory.GetFiles(Path.Combine(wwwrootPath, folderPath), "*.jpg")
-                                       .Select(fileName => $"~/{folderPath}/{Path.GetFileName(fileName)}")
-                                       .ToList();
+            var imageFiles = Directory.GetFiles(Path.Combine(wwwrootPath, folderPath), "*.*")
+                           .Where(fileName => fileName.ToLower().EndsWith(".jpg") || fileName.ToLower().EndsWith(".png"))
+                           .Select(fileName => $"~/{folderPath}/{Path.GetFileName(fileName)}")
+                           .ToList();
+
 
             return imageFiles;
         }
 
         public IActionResult Index()
         {
-            // Создаем список для передачи ссылок в представление
-            var links = new List<string>
-            {
-                Url.Action("Page1"),
-                Url.Action("Page2"),
-                Url.Action("Page3"),
-                Url.Action("Page4")
-            };
+            
 
             var model = new HomeViewModel
             {
-                Links = links,
                 Images = _images
             };
 
@@ -77,16 +71,6 @@ namespace Cafe.Controllers
 
         [Authorize(Roles = "Administrator")]
         [HttpPost]
-        public IActionResult AddImage()
-        {
-            // Логика добавления нового изображения
-            // ...
-
-            return RedirectToAction("Index");
-        }
-
-        [Authorize(Roles = "Administrator")]
-        [HttpPost]
         public IActionResult RemoveImage(string imagePath)
         {
             // Проверка наличия изображения в списке
@@ -105,6 +89,55 @@ namespace Cafe.Controllers
             }
 
             return Json(new { success = false });
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public IActionResult AddImage(IFormFile imageFile)
+        {
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var newImagePath = SaveImage(imageFile);
+                _images.Add(newImagePath);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public IActionResult EditImage(string oldImagePath, IFormFile newImageFile)
+        {
+            // Полный путь к старому изображению
+            var oldPhysicalPath = Path.Combine(_webHostEnvironment.WebRootPath, oldImagePath.TrimStart('~').TrimStart('/'));
+
+            // Удаляем старое изображение
+            System.IO.File.Delete(oldPhysicalPath);
+
+            // Сохраняем новое изображение
+            var newImagePath = SaveImage(newImageFile);
+
+            // Обновляем путь в списке изображений
+            var index = _images.IndexOf(oldImagePath);
+            if (index != -1)
+            {
+                _images[index] = newImagePath;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        private string SaveImage(IFormFile imageFile)
+        {
+            // Сохраняем новое изображение
+            var newImagePath = $"~/images/{Path.GetFileName(imageFile.FileName)}";
+            var newPhysicalPath = Path.Combine(_webHostEnvironment.WebRootPath, newImagePath.TrimStart('~').TrimStart('/'));
+            using (var stream = new FileStream(newPhysicalPath, FileMode.Create))
+            {
+                imageFile.CopyTo(stream);
+            }
+
+            return newImagePath;
         }
     }
 }
