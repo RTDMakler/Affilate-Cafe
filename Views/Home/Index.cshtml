@@ -1,73 +1,63 @@
-﻿<!-- Views/Home/Index.cshtml -->
-@model Cafe.Models.HomeViewModel
+﻿@model Cafe.Models.HomeViewModel
 
 @{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>We are the best affiliate marketing of pastry food.</p>
+	<h1 class="display-4">Welcome</h1>
+	<p>We are the best affiliate marketing of pastry food.</p>
 </div>
 
 
 <div class="image-container">
-        @foreach (var image in Model.Images)
-        {
-            <div class="image-item">
-                <img src="@Url.Content(image)" alt="Картинка">
-                @if (User.IsInRole("Administrator"))
-                {
-                                <div class="admin-controls">
-            <form id="editForm" asp-controller="Home" asp-action="EditImage" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="oldImagePath" value="@image" />
-                <input type="file" name="newImageFile" accept="image/*"  required onchange="this.form.submit()" />
-            </form>
-              <button class="admin-control" onclick="removeImage('@image')">Remove</button>
-        </div>
-                }
-            </div>
-        }
+	@foreach (var image in Model.Images)
+	{
+				<div class="image-item">
+												<img src="@Url.Content(image)" alt="Картинка">
+			@if (User.IsInRole("Administrator"))
+			{
+		<div class="admin-controls">
+		<form id="editForm" asp-controller="Home" asp-action="EditImage" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="oldImagePath" value="@image" />
+		<input type="file" name="newImageFile" accept="image/*"  required onchange="this.form.submit()" />
+		</form>
+		<button class="admin-control" onclick="removeImage('@image')">Remove</button>
+		</div>
+			}
+											</div>
+	}
 </div>
 
 
-<!-- Форма для загрузки новых изображений (для администратора) -->
 @if (User.IsInRole("Administrator"))
 {
-        <form id="uploadForm" asp-controller="Home" asp-action="AddImage" method="post" enctype="multipart/form-data">
-        <input type="file"  name="imageFile" accept="image/*" required onchange="this.form.submit()" />
-    </form>
+										<form id="uploadForm" asp-controller="Home" asp-action="AddImage" method="post" enctype="multipart/form-data">
+										<input type="file"  name="imageFile" accept="image/*" required onchange="this.form.submit()" />
+									</form>
 }
 
-<!-- JavaScript для обработки действий администратора -->
 @section Scripts {
-    <script>
-        function editImage(imagePath) {
-            // Логика редактирования изображения (если необходимо)
-            // ...
-        }
-
-        function removeImage(imagePath) {
-            // Отправка запроса на удаление изображения на сервер
-            fetch('/Home/RemoveImage?imagePath=' + encodeURIComponent(imagePath), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': $('input[name="__RequestVerificationToken"]').val()
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Обработка ответа, например, перезагрузка страницы
-                if (data.success) {
-                    location.reload();
-                } else {
-                    console.error('Error removing image');
-                }
-            })
-            .catch(error => {
-                console.error('Error removing image:', error);
-            });
-        }
-    </script>
+									<script>
+										function removeImage(imagePath) {
+											fetch('/Home/RemoveImage?imagePath=' + encodeURIComponent(imagePath), {
+												method: 'POST',
+												headers: {
+													'Content-Type': 'application/json',
+													'X-CSRF-TOKEN': $('input[name="__RequestVerificationToken"]').val()
+												}
+											})
+											.then(response => response.json())
+											.then(data => {
+												if (data.success) {
+													location.reload();
+												} else {
+													console.error('Error removing image');
+												}
+											})
+											.catch(error => {
+												console.error('Error removing image:', error);
+											});
+										}
+									</script>
 }

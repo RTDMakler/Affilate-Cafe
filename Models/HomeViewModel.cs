@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Cafe.Models
+﻿namespace Cafe.Models
 {
     public class HomeViewModel
     {

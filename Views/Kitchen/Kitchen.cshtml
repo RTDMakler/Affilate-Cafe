@@ -1,7 +1,4 @@
-﻿@model Cafe.Models.FullOrderModel
-
-<h2>Kitchen Orders</h2>
-
+﻿
 <table class="table">
     <thead>
         <tr>
@@ -9,6 +6,7 @@
             <th>Customer Name</th>
             <th>Ready Time</th>
             <th>Order Amount</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -19,6 +17,14 @@
                     <td>@order.CustomerName</td>
                     <td>@order.ReadyTime.ToString("MM-dd HH:mm")</td>
                     <td>Количество товаров: @order.Goods.Length</td>
+                    <td>
+                    @if (User.IsInRole("Administrator"))
+                    {
+                                <form method="post" asp-action="DeleteOrder" asp-route-orderNumber="@order.OrderNumber">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                    }
+                    </td>
                 </tr>
         }
     </tbody>
@@ -44,12 +50,10 @@
                 <label for="ReadyTime">Ready Time:</label>
                 @if (User.IsInRole("Administrator"))
                 {
-                        <!-- Если пользователь - администратор, позволяйте устанавливать время -->
                         <input type="datetime-local" id="ReadyTime" name="ReadyTime" class="form-control" />
                 }
                 else
                 {
-                        <!-- Если пользователь не администратор, скройте поле для времени -->
                         <input type="hidden" id="ReadyTime" name="ReadyTime" />
                         <p class="text-muted">Only administrators can set the ready time.</p>
                 }
@@ -79,10 +83,7 @@
 <script>
     $(document).ready(function () {
         $("#SelectedWords").change(function () {
-            // Получаем выбранное значение
             var selectedImage = $("#SelectedWords option:selected").val();
-
-            // Обновляем src изображения
             $("#selectedImage").attr("src", selectedImage);
         });
     });

@@ -9,24 +9,21 @@ namespace Cafe
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Регистрация служб
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<UserService>();
 
-            // Настройка аутентификации
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie(options =>
             {
-                options.LoginPath = "/Account/Login"; // Путь к странице входа
+                options.LoginPath = "/Account/Login"; 
             });
 
 
             var app = builder.Build();
 
-            // Конфигурация HTTP-конвейера
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");

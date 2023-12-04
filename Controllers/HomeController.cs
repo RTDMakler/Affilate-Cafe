@@ -7,20 +7,16 @@ namespace Cafe.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        // Статическое поле для хранения списка изображений
         private static List<string> _images;
-        public HomeController(ILogger<HomeController> logger, IWebHostEnvironment webHostEnvironment)
+        public HomeController(IWebHostEnvironment webHostEnvironment)
         {
-            _logger = logger;
             _webHostEnvironment = webHostEnvironment;
 
-            // Загрузка изображений только при первом запуске
             if (_images == null)
             {
-                _images = LoadImagesFromFolder("images"); // Путь к папке с изображениями
+                _images = LoadImagesFromFolder("images"); 
             }
         }
         private List<string> LoadImagesFromFolder(string folderPath)
@@ -72,16 +68,12 @@ namespace Cafe.Controllers
         [HttpPost]
         public IActionResult RemoveImage(string imagePath)
         {
-            // Проверка наличия изображения в списке
             if (_images.Contains(imagePath))
             {
-                // Полный путь к изображению в файловой системе
                 var physicalPath = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('~').TrimStart('/'));
 
-                // Удаляем файл изображения
                 System.IO.File.Delete(physicalPath);
 
-                // Удаляем изображение из списка
                 _images.Remove(imagePath);
 
                 return Json(new { success = true });
@@ -107,16 +99,12 @@ namespace Cafe.Controllers
         [HttpPost]
         public IActionResult EditImage(string oldImagePath, IFormFile newImageFile)
         {
-            // Полный путь к старому изображению
             var oldPhysicalPath = Path.Combine(_webHostEnvironment.WebRootPath, oldImagePath.TrimStart('~').TrimStart('/'));
 
-            // Удаляем старое изображение
             System.IO.File.Delete(oldPhysicalPath);
 
-            // Сохраняем новое изображение
             var newImagePath = SaveImage(newImageFile);
 
-            // Обновляем путь в списке изображений
             var index = _images.IndexOf(oldImagePath);
             if (index != -1)
             {
@@ -128,7 +116,6 @@ namespace Cafe.Controllers
 
         private string SaveImage(IFormFile imageFile)
         {
-            // Сохраняем новое изображение
             var newImagePath = $"~/images/{Path.GetFileName(imageFile.FileName)}";
             var newPhysicalPath = Path.Combine(_webHostEnvironment.WebRootPath, newImagePath.TrimStart('~').TrimStart('/'));
             using (var stream = new FileStream(newPhysicalPath, FileMode.Create))

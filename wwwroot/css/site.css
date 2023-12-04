@@ -36,11 +36,11 @@ body {
 }
 
 .admin-control {
-    margin-top: 5px; /* Или другие стили по вашему выбору */
+    margin-top: 5px; 
 }
 
 .image-item img {
     height: 90%;
-    aspect-ratio:1;/* Или другая фиксированная высота по вашему выбору */
+    aspect-ratio:1;
 }
 

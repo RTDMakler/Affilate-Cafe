@@ -1,6 +1,5 @@
 ﻿namespace Cafe.Controllers
 {
-    // KitchenController.cs
     using Cafe.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,7 @@
     public class KitchenController : Controller
     {
         private static List<OrderModel> _orders = new List<OrderModel>();
-
+        static int _ordersCount = 0;
 
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -21,10 +20,9 @@
 
             _webHostEnvironment = webHostEnvironment;
 
-            // Загрузка изображений только при первом запуске
             if (_images == null)
             {
-                _images = LoadImagesFromFolder("images"); // Путь к папке с изображениями
+                _images = LoadImagesFromFolder("images"); 
             }
         }
         private List<string> LoadImagesFromFolder(string folderPath)
@@ -40,6 +38,7 @@
         }
 
 
+
         public IActionResult Kitchen()
         {
             FullOrderModel fullOrder = new FullOrderModel();
@@ -50,37 +49,44 @@
             return View(fullOrder);
         }
 
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult DeleteOrder(int orderNumber)
+        {
+            var orderToDelete = _orders.Find(o => o.OrderNumber == orderNumber);
+            if (orderToDelete != null)
+            {
+                _orders.Remove(orderToDelete);
+            }
+            return RedirectToAction("Kitchen", "Kitchen");
+        }
+
         [HttpPost]
         public IActionResult AddOrder(OrderModel newOrder, string[] selectedWords)
         {
-            // Генерация номера заказа
             newOrder.OrderNumber = GenerateOrderNumber();
 
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity!.IsAuthenticated)
             {
-                // Если пользователь аутентифицирован, используйте его имя
-                newOrder.CustomerName = User.Identity.Name;
+                newOrder.CustomerName = User.Identity.Name!;
             }
             else
             {
-                // Иначе, используйте значение из формы
-                newOrder.CustomerName = Request.Form["CustomerName"];
+                newOrder.CustomerName = Request.Form["CustomerName"]!;
             }
 
-            // Генерация случайного времени, если не задано в форме
             if (newOrder.ReadyTime == DateTime.MinValue)
             {
                 newOrder.ReadyTime = GenerateRandomTime();
             }
             newOrder.Goods = selectedWords;
-            // Добавление нового заказа в список
             _orders.Add(newOrder);
             return RedirectToAction("Kitchen", "Kitchen");
         }
 
         private DateTime GenerateRandomTime()
         {
-            // Генерация случайного времени в пределах ближайших 7 дней
             Random random = new Random();
             int daysToAdd = random.Next(1, 7);
             return DateTime.Now.AddDays(daysToAdd);
@@ -88,9 +94,8 @@
 
         private int GenerateOrderNumber()
         {
-            // Генерация уникального номера заказа
-            Random random = new Random();
-            return random.Next(1000, 9999);
+            _ordersCount++;
+            return _ordersCount;
         }
     }
 

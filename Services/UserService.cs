@@ -1,12 +1,9 @@
 ﻿using Cafe.Models;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 
 
 namespace Cafe.Services
 {
-    // Services/UserService.cs
     public class UserService
     {
         private const int AdminCode = 1337;
@@ -20,7 +17,6 @@ namespace Cafe.Services
         }
         public bool IsValidUser(string username, string password)
         {
-            // Пример: Проверка валидности пользователя
             var user = users.FirstOrDefault(u => u.UserName == username && u.Password == password);
 
             return user != null;
@@ -64,7 +60,6 @@ namespace Cafe.Services
             return users.FirstOrDefault(u => u.UserName == username);
         }
 
-        // UserService.cs
         public IEnumerable<UserModel> GetAllUsers()
         {
             return users;
@@ -81,7 +76,6 @@ namespace Cafe.Services
                     SaveData();
                 }
             }
-            // Иначе можно выбросить исключение или обработать такой случай по вашему усмотрению.
         }
     }
 

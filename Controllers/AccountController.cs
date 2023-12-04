@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Cafe.Controllers
 {
-    // Controllers/AccountController.cs
     public class AccountController : Controller
     {
         private readonly UserService userService;
@@ -31,7 +30,6 @@ namespace Cafe.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Проверка, что пользователь с таким именем не существует
                 if (userService.GetUserByUsername(newUser.UserName) == null)
                 {
                     userService.AddUser(newUser);
@@ -45,8 +43,6 @@ namespace Cafe.Controllers
             return View(newUser);
         }
 
-
-        //Authentification
         [HttpGet]
         public IActionResult Login()
         {
@@ -59,11 +55,10 @@ namespace Cafe.Controllers
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
-        // AccountController.cs
+
         [HttpPost]
         public async Task<IActionResult> Login(UserModel user, int adminCode)
         {
-            // Проведите аутентификацию пользователя, проверив его учетные данные и роль администратора
             if (userService.IsValidUser(user.UserName, user.Password))
             {
                 if (userService.IsAdminCodeValid(adminCode))
@@ -71,8 +66,7 @@ namespace Cafe.Controllers
                     var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, "Administrator"), // Добавление роли администратора
-                // Другие утверждения, которые вы можете добавить
+                new Claim(ClaimTypes.Role, "Administrator"), 
             };
 
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -80,19 +74,16 @@ namespace Cafe.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    ViewData["UserRole"] = "Administrator"; // Установка значения для отображения на экране
+                    ViewData["UserRole"] = "Administrator"; 
 
                     return RedirectToAction("Index", "Home");
                 }
 
-                // Неправильный пароль админа
-                // Вход без роли администратора
-                ViewData["UserRole"] = "User"; // Установка значения для отображения на экране
+                ViewData["UserRole"] = "User"; 
 
                 var userClaims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
-            // Другие утверждения, которые вы можете добавить для пользователя
         };
 
                 var userIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -103,13 +94,11 @@ namespace Cafe.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Неправильные учетные данные или отсутствие роли администратора
             ModelState.AddModelError("", "Invalid username, password, or admin code");
             return View();
         }
 
-        // AccountController.cs
-        [Authorize(Roles = "Administrator")] // Требование, чтобы пользователь имел роль администратора для доступа к этому действию
+        [Authorize(Roles = "Administrator")] 
         public IActionResult ViewUsers()
         {
             var allUsers = userService.GetAllUsers();
@@ -120,7 +109,7 @@ namespace Cafe.Controllers
         [Authorize(Roles = "Administrator")]
         public IActionResult RemoveUser(string username)
         {
-            string requestingUsername = User.Identity.Name; // Получаем имя пользователя, выполняющего запрос
+            string requestingUsername = User.Identity.Name;
             userService.RemoveUser(requestingUsername, username);
             return RedirectToAction("ViewUsers");
         }
