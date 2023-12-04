@@ -1,4 +1,4 @@
-﻿@model Cafe.Models.KitchenViewModel
+﻿@model Cafe.Models.FullOrderModel
 
 <h2>Kitchen Orders</h2>
 
@@ -8,15 +8,17 @@
             <th>Order Number</th>
             <th>Customer Name</th>
             <th>Ready Time</th>
+            <th>Order Amount</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in Model.Orders)
+        @foreach (var order in Model.KitchenViewModel.Orders)
         {
                 <tr>
                     <td>@order.OrderNumber</td>
                     <td>@order.CustomerName</td>
-                    <td>@order.ReadyTime.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@order.ReadyTime.ToString("MM-dd HH:mm")</td>
+                    <td>Количество товаров: @order.Goods.Length</td>
                 </tr>
         }
     </tbody>
@@ -28,12 +30,10 @@
         <form method="post" asp-action="AddOrder">
             @if (User.Identity.IsAuthenticated)
             {
-                    <!-- Если пользователь аутентифицирован, используйте его имя -->
                     <input type="hidden" name="CustomerName" value="@User.Identity.Name" />
             }
             else
             {
-                    <!-- Иначе, предоставьте поле для ввода имени -->
                     <div class="form-group">
                         <label for="CustomerName">Customer Name:</label>
                         <input type="text" id="CustomerName" name="CustomerName" class="form-control" required />
@@ -42,10 +42,48 @@
 
             <div class="form-group">
                 <label for="ReadyTime">Ready Time:</label>
-                <input type="datetime-local" id="ReadyTime" name="ReadyTime" class="form-control" />
+                @if (User.IsInRole("Administrator"))
+                {
+                        <!-- Если пользователь - администратор, позволяйте устанавливать время -->
+                        <input type="datetime-local" id="ReadyTime" name="ReadyTime" class="form-control" />
+                }
+                else
+                {
+                        <!-- Если пользователь не администратор, скройте поле для времени -->
+                        <input type="hidden" id="ReadyTime" name="ReadyTime" />
+                        <p class="text-muted">Only administrators can set the ready time.</p>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="SelectedWords">Select Words:</label>
+                <select id="SelectedWords" name="SelectedWords" class="form-control" multiple>
+                    @foreach (var img in Model.homeViewModel.Images)
+                    {
+                            <option value="@Url.Content(img)">@System.IO.Path.GetFileNameWithoutExtension(img)</option>
+                    }
+                </select>
+            </div>
+
+            <div id="selectedImageContainer">
+                <img id="selectedImage" src="#" alt="Selected Image" height="250" width="250" />
             </div>
 
             <button type="submit" class="btn btn-primary">Add Order</button>
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#SelectedWords").change(function () {
+            // Получаем выбранное значение
+            var selectedImage = $("#SelectedWords option:selected").val();
+
+            // Обновляем src изображения
+            $("#selectedImage").attr("src", selectedImage);
+        });
+    });
+</script>

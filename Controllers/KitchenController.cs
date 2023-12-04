@@ -2,7 +2,6 @@
 {
     // KitchenController.cs
     using Cafe.Models;
-    using Cafe.Models.Cafe.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System;
@@ -11,21 +10,48 @@
     [Authorize]
     public class KitchenController : Controller
     {
-        private static List<OrderModel> orders = new List<OrderModel>();
+        private static List<OrderModel> _orders = new List<OrderModel>();
+
+
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        private static List<string> _images;
+        public KitchenController( IWebHostEnvironment webHostEnvironment)
+        {
+
+            _webHostEnvironment = webHostEnvironment;
+
+            // Загрузка изображений только при первом запуске
+            if (_images == null)
+            {
+                _images = LoadImagesFromFolder("images"); // Путь к папке с изображениями
+            }
+        }
+        private List<string> LoadImagesFromFolder(string folderPath)
+        {
+            var wwwrootPath = _webHostEnvironment.WebRootPath;
+            var imageFiles = Directory.GetFiles(Path.Combine(wwwrootPath, folderPath), "*.*")
+                           .Where(fileName => fileName.ToLower().EndsWith(".jpg") || fileName.ToLower().EndsWith(".png"))
+                           .Select(fileName => $"~/{folderPath}/{Path.GetFileName(fileName)}")
+                           .ToList();
+
+
+            return imageFiles;
+        }
+
 
         public IActionResult Kitchen()
         {
-            // Отображение всех существующих заказов
-            var viewModel = new KitchenViewModel
-            {
-                Orders = orders
-            };
-
-            return View(viewModel);
+            FullOrderModel fullOrder = new FullOrderModel();
+            fullOrder.KitchenViewModel = new KitchenViewModel();
+            fullOrder.KitchenViewModel.Orders = _orders;
+            fullOrder.homeViewModel = new HomeViewModel();
+            fullOrder.homeViewModel.Images = _images;
+            return View(fullOrder);
         }
 
         [HttpPost]
-        public IActionResult AddOrder(OrderModel newOrder)
+        public IActionResult AddOrder(OrderModel newOrder, string[] selectedWords)
         {
             // Генерация номера заказа
             newOrder.OrderNumber = GenerateOrderNumber();
@@ -46,9 +72,9 @@
             {
                 newOrder.ReadyTime = GenerateRandomTime();
             }
-
+            newOrder.Goods = selectedWords;
             // Добавление нового заказа в список
-            orders.Add(newOrder);
+            _orders.Add(newOrder);
             return RedirectToAction("Kitchen", "Kitchen");
         }
 
